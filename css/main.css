@@ -6,6 +6,7 @@
 
 div[black="true"] {
   background-color: black;
+  color: white;
 }
 
 #board-container {
