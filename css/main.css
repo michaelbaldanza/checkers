@@ -1,0 +1,14 @@
+.square {
+  min-width: 75px;
+  min-height: 75px;
+  border: solid black 1px;
+}
+
+div[black="true"] {
+  background-color: black;
+}
+
+#board-container {
+  display: grid;
+  grid-template-columns: repeat(8, 75px);
+}
