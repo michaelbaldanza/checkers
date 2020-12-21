@@ -1,7 +1,15 @@
+#board-container {
+  display: grid;
+  grid-template-columns: repeat(8, 70px);
+}
+
 .square {
-  min-width: 75px;
-  min-height: 75px;
+  min-width: 70px;
+  min-height: 70px;
   border: solid black 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
 }
 
 div[black="true"] {
@@ -9,7 +17,16 @@ div[black="true"] {
   color: white;
 }
 
-#board-container {
-  display: grid;
-  grid-template-columns: repeat(8, 75px);
+.piece {
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 50%;
+}
+
+div[red="true"] {
+  background-color: red;
+}
+
+div[red="false"] {
+  background-color: grey;
 }
