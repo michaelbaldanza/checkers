@@ -6,6 +6,10 @@ let blackPieces = 0;
 let boardEls = [];
 let redPieceEls = [];
 let blackPieceEls = [];
+let pieceEls = [];
+
+let turnCounter = 1;
+let currentPlayer = turnCounter % 2 !== 0 ? 'b' : 'r';
 
 const boardContainerEl = document.getElementById('board-container');
 
@@ -17,6 +21,7 @@ function init() {
   initBoardState();
   initPieceState();
   setupBoard();
+  startGame();
 }
 
 function initBoardState() {
@@ -63,9 +68,10 @@ function setupBoard() {
   for (i = 0; i < board.length; i++) {
     // create the tiles of the board
     let newSquare = document.createElement('div');
-    let newSquareId = i.toString();
+    let newTileNo = i.toString();
+    // add tracking attributes
     newSquare.setAttribute('class', 'square');
-    newSquare.setAttribute('id', newSquareId);
+    newSquare.setAttribute('tileNo', newTileNo);
     // set the tiles' colour
     if (board[i] !== null) {
       newSquare.setAttribute('black', 'true');
@@ -77,18 +83,56 @@ function setupBoard() {
       let newRedPiece = document.createElement('div');
       newRedPiece.setAttribute('class', 'piece');
       newRedPiece.setAttribute('red', 'true');
+      newRedPiece.setAttribute('tileNo', newTileNo);
       newSquare.appendChild(newRedPiece);
       redPieceEls.push(newRedPiece);
+      pieceEls.push(newRedPiece);
     }
     if (board[i] === 'b') {
       let newBlackPiece = document.createElement('div');
       newBlackPiece.setAttribute('class', 'piece');
       newBlackPiece.setAttribute('red', 'false');
+      newBlackPiece.setAttribute('tileNo', newTileNo);
       newSquare.appendChild(newBlackPiece);
       blackPieceEls.push(newBlackPiece);
+      pieceEls.push(newBlackPiece);
     }
     boardContainerEl.appendChild(newSquare);
     boardEls.push(newSquare);
   }
-  
+  console.log(`The board view is manifested by ${boardEls}`);
+}
+
+function startGame() {
+  takeTurn();
+}
+
+function takeTurn() {
+  // determine what pieces can move
+  let moveablePieces = [];
+  console.log(`The current player is ${currentPlayer}`)
+  for (i = 0; i < board.length; i++) {
+    // select the indices modeling the current player's pieces
+    if (board[i] === currentPlayer) {
+      // select the piece that can make valid move
+      if (
+        board[i - 9] === '' ||
+        board[i - 7] === '' ||
+        board[i + 7] === '' ||
+        board[i + 9] === ''
+      ) { 
+        // change the model to reflect that the piece is allowed to be moved
+        moveablePieces.push(i);
+        board[i] = 'm';
+      }
+    }
+  }
+  moveablePieces.forEach(function(piece) {
+    console.log(`The tile at ${piece} contains ${board[piece]}`);
+  });
+  console.log(`${moveablePieces} are moveable pieces.`);
+  // add event listeners to the moveable pieces
+  // for (i = 0; i < board.length; i++) {
+  //   if (board)
+  // }
 }
