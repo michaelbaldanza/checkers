@@ -1,3 +1,10 @@
+body {
+  background-color: green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #board-container {
   display: grid;
   grid-template-columns: repeat(8, 70px);
@@ -6,14 +13,20 @@
 .square {
   min-width: 70px;
   min-height: 70px;
-  border: solid black 1px;
+  /* border: solid grey 1px; */
+  border: none;
   display: flex;
   justify-content: center;
   align-items: center;  
 }
 
-div[black="true"] {
+div[grey="true"] {
   background-color: black;
+  color: white;
+}
+
+div[grey="false"] {
+  background-color: white;
   color: white;
 }
 
@@ -28,5 +41,5 @@ div[red="true"] {
 }
 
 div[red="false"] {
-  background-color: grey;
+  background-color: white;
 }
