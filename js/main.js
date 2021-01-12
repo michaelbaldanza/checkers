@@ -12,8 +12,8 @@ let possibleMoves = [];
 
 let boardEls = [];
 
-let turnCounter = 1;
-let currentPlayer = turnCounter % 2 !== 0 ? 'r' : 'w';
+let turnCounter = 0;
+let currentPlayer;
 
 const boardContainerEl = document.getElementById('board-container');
 
@@ -23,7 +23,7 @@ function init() {
   initBoardState();
   initPieceState();
   setupBoardView();
-  startGame();
+  takeTurn();
 }
 
 function initBoardState() {
@@ -93,7 +93,11 @@ function setupBoardView() {
   }
 }
 
-function startGame() {
+function takeTurn() {
+  turnCounter += 1;
+  currentPlayer = turnCounter % 2 !== 0 ? 'r' : 'w';
+  console.log(turnCounter);
+  console.log(currentPlayer);
   determineMovement();
 }
 
@@ -117,7 +121,6 @@ function determineMovement() {
       }
     }
   }
-  console.log(board);
 }
 
 function selectPiece(evt) {
@@ -135,29 +138,30 @@ function selectPiece(evt) {
       if (currentPlayer === 'r') {
         board[i + moves.men[0]] = 'd';
         board[i + moves.men[1]] = 'd';
-      } else if (currentPlayer === 'w') {
+        boardEls[i + moves.men[0]].addEventListener('click', selectDestination);
+        boardEls[i + moves.men[1]].addEventListener('click', selectDestination);
+      }
+      if (currentPlayer === 'w') {
         board[i - moves.men[0]] = 'd';
         board[i - moves.men[1]] = 'd';
+        boardEls[i - moves.men[0]].addEventListener('click', selectDestination);
+        boardEls[i - moves.men[1]].addEventListener('click', selectDestination);
       }
     }
-    if (board[i] === 'd') {
-      boardEls[i].addEventListener('click', selectDestination);
-    }
   }
+  console.log(board);
 }
 
 function selectDestination(evt) {
   let selectedDestination = evt.target;
-  console.log(selectedDestination);
   let newIdx = parseInt(selectedDestination.getAttribute('tileNo'));
   let oldIdx = board.indexOf('s');
-  console.log(`The piece is moving from ${oldIdx} to ${newIdx}`);
   let selectedPiece = boardEls[oldIdx].firstChild;
   // move piece
   selectedDestination.appendChild(selectedPiece);
   selectedPiece.removeAttribute('selected');
   // 
-  
+  selectedDestination.removeEventListener('click', selectDestination);
   board[oldIdx] = '';
   board[newIdx] = currentPlayer;
   for (i = 0; i < board.length; i++) {
@@ -166,4 +170,5 @@ function selectDestination(evt) {
       board[i] = '';
     }
   }
+  takeTurn();
 }
