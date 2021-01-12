@@ -11,7 +11,6 @@ let moveablePieces = [];
 let possibleMoves = [];
 
 let boardEls = [];
-let pieceEls = [];
 
 let turnCounter = 1;
 let currentPlayer = turnCounter % 2 !== 0 ? 'r' : 'w';
@@ -24,14 +23,12 @@ function init() {
   initBoardState();
   initPieceState();
   setupBoardView();
-  setupPieceView();
   startGame();
 }
 
 function initBoardState() {
   for (i = 0; i < board.length; i++) {
-    // separate elements based on whether they are playable (empty strings) or
-    // non-playable (null)
+    // empty strings hold state for playable tiles, null for non-playable
     if (
       i < 8 ||
       i > 15 && i < 24 ||
@@ -51,12 +48,11 @@ function initBoardState() {
       }
     }
   }
-  console.log(board);
 }
 
 function initPieceState() {
   for (i = 0; i < board.length; i++) {
-    // add text to elements that represent starting positions of red and black
+    // 'r' indicates starting position of red; 'w' starting position of white
     if (i < 24 && board[i] !== null) {
       board[i] = 'r';
     }
@@ -64,20 +60,31 @@ function initPieceState() {
       board[i] = 'w';
     }
   }
-  console.log(board);
 }
 
 function setupBoardView() {
   for (i = 0; i < board.length; i++) {
-    // create tiles of the board
+    // create tiles
     let newSquare = document.createElement('div');
-    // add attributes for CSS
     newSquare.setAttribute('class', 'square');
     newSquare.setAttribute('tileNo', i.toString());
     if (board[i] !== null) {
       newSquare.setAttribute('grey', 'true');
     } else {
       newSquare.setAttribute('grey', 'false');
+    }
+    // create pieces
+    if (board[i] === 'r' || board[i] === 'w') {
+      let newPiece = document.createElement('div');
+      newPiece.setAttribute('class', 'piece');
+      if (board[i] === 'r') {
+        newPiece.setAttribute('red', 'true');
+      }
+      if (board[i] === 'w') {
+        newPiece.setAttribute('red', 'false');
+      }
+      // place each piece on its starting tile
+      newSquare.appendChild(newPiece);
     }
     // lay the tiles on the board
     boardContainerEl.appendChild(newSquare);
@@ -86,65 +93,42 @@ function setupBoardView() {
   }
 }
 
-function setupPieceView() {
-  for (i = 0; i < board.length; i++) {
-    // create pieces
-    let newPiece = document.createElement('div');
-    // add identifying attribute
-    newPiece.setAttribute('class', 'piece');
-    newPiece.setAttribute('tileNo', i.toString());
-    if (board[i] === 'r') {
-      // red tiles
-      newPiece.setAttribute('red', 'true');
-      boardEls[i].appendChild(newPiece);
-      pieceEls.push(newPiece);
-    } else if (board[i] === 'w') {
-      // black tiles
-      newPiece.setAttribute('class', 'piece');
-      newPiece.setAttribute('red', 'false');
-      boardEls[i].appendChild(newPiece);
-      pieceEls.push(newPiece)
-    } else {
-      // add null elements so that pieceEls tracks board
-      let emptyTile = null;
-      pieceEls.push(emptyTile);
-    }
-  }
-}
-
 function startGame() {
   determineMovement();
 }
 
 function determineMovement() {
-  // determine what pieces can move
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     if (board[i] === currentPlayer) {
       // toggle the red pieces that can make a valid move
       if (currentPlayer === 'r') {
         if (board[i + moves.men[0]] === '' || board[i + moves.men[1]] === '') {
-          pieceEls[i].addEventListener('click', selectPiece);
+          boardEls[i].firstChild.addEventListener('click', selectPiece);
           board[i] = 'm';
         }   
       }
       // toggle the white pieces that can make a valid move
       if (currentPlayer === 'w') {
         if (board[i - moves.men[0]] === '' || board[i - moves.men[1]] === '') {
-          pieceEls[i].addEventListener('click', selectPiece);
+          boardEls[i].firstChild.addEventListener('click', selectPiece);
           board[i] = 'm';
         }
       }
     }
   }
+  console.log(board);
 }
 
 function selectPiece(evt) {
-  let pieceId = evt.target.getAttribute('tileNo');
+  let selectedPiece = evt.target;
+  selectedPiece.setAttribute('selected', '');
+  let pieceId = selectedPiece.parentElement.getAttribute('tileNo');
   board[pieceId] = 's';
+  selectedPiece.removeEventListener('click', selectPiece);
   for (i = 0; i < board.length; i++) {
     if (board[i] === 'm') {
-      pieceEls[i].removeEventListener('click', selectPiece);
+      boardEls[i].firstChild.removeEventListener('click', selectPiece);
       board[i] = currentPlayer;
     }
     if (currentPlayer === 'r') {
@@ -163,14 +147,26 @@ function selectPiece(evt) {
       boardEls[i].addEventListener('click', selectDestination);
     }
   }
-  console.log(pieceEls);
 }
 
 function selectDestination(evt) {
-  alert(`${evt.target.getAttribute('tileNo')} has been selected!`);
-  console.log(board.indexOf('s'));
-  evt.target.appendChild(pieceEls[board.indexOf('s')]);
+  let selectedDestination = evt.target;
+  console.log(selectedDestination);
+  let newIdx = parseInt(selectedDestination.getAttribute('tileNo'));
+  let oldIdx = board.indexOf('s');
+  console.log(`The piece is moving from ${oldIdx} to ${newIdx}`);
+  let selectedPiece = boardEls[oldIdx].firstChild;
+  // move piece
+  selectedDestination.appendChild(selectedPiece);
+  selectedPiece.removeAttribute('selected');
+  // 
+  
+  board[oldIdx] = '';
+  board[newIdx] = currentPlayer;
   for (i = 0; i < board.length; i++) {
-
+    if (board[i] === 'd') {
+      boardEls[i].removeEventListener('click', selectDestination);
+      board[i] = '';
+    }
   }
 }

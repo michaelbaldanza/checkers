@@ -1,5 +1,5 @@
 body {
-  background-color: green;
+  background-color: #0C8691;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,13 +21,11 @@ body {
 }
 
 div[grey="true"] {
-  background-color: black;
-  color: white;
+  background-color: #000105;
 }
 
 div[grey="false"] {
-  background-color: white;
-  color: white;
+  background-color: #FDFFFA;
 }
 
 .piece {
@@ -37,9 +35,13 @@ div[grey="false"] {
 }
 
 div[red="true"] {
-  background-color: red;
+  background-color: #B00C17;
 }
 
 div[red="false"] {
-  background-color: white;
+  background-color: #FDFFFA;
+}
+
+div[selected] {
+  background-color: yellow;
 }
