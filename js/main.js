@@ -131,14 +131,11 @@ function selectPiece(evt) {
       boardEls[i].firstChild.removeEventListener('click', selectPiece);
       board[i] = currentPlayer;
     }
-    if (currentPlayer === 'r') {
-      if (board[i] === 's') {
+    if (board[i] === 's') {
+      if (currentPlayer === 'r') {
         board[i + moves.men[0]] = 'd';
         board[i + moves.men[1]] = 'd';
-      }
-    }
-    if (currentPlayer === 'w') {
-      if (board[i] === 's') {
+      } else if (currentPlayer === 'w') {
         board[i - moves.men[0]] = 'd';
         board[i - moves.men[1]] = 'd';
       }
