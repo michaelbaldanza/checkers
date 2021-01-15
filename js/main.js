@@ -3,7 +3,7 @@ const board = new Array(64);
 
 const moves = {
   men: [9, 7],
-  jump: [17, 14], 
+  jump: [18, 15], 
   king: [9, 7, -9, -7,] 
 };
 
@@ -103,10 +103,10 @@ function takeTurn() {
   console.log(currentPlayer);
   console.log(`This is the board at the beginning of a player's turn`);
   console.log(board);
-  determineMovement();
+  determineMoveablePieces();
 }
 
-function determineMovement() {
+function determineMoveablePieces() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     if (board[i] === currentPlayer) {
@@ -136,29 +136,67 @@ function determineMovement() {
       }
     }
   }
-  console.log(`This is the board after running determineMovement`);
-  console.log(board)
+  console.log(`This is the board after running determineMoveablePieces`);
+  console.log(board);
 }
 
 function selectPiece(evt) {
   let selectedPiece = evt.target;
   selectedPiece.setAttribute('selected', '');
-  let pieceId = selectedPiece.parentElement.getAttribute('tileNo');
-  console.log(boardEls[pieceId]);
-  board[pieceId] = 's';
   selectedPiece.removeEventListener('click', selectPiece);
+  board[selectedPiece.parentElement.getAttribute('tileNo')] = 's';
+  for (i = 0; i < board.length; i++) {
+    if (board[i] === 'm') {
+      boardEls[i].firstChild.removeEventListener('click', selectPiece);
+      board[i] = currentPlayer;
+    }
+  }
+  determineMoves();
+  // for (i = 0; i < board.length; i++) {
+  //   let redMove1 = i + moves.men[0];
+  //   let redMove2 = i + moves.men[1];
+  //   let whiteMove1 = i - moves.men[0];
+  //   let whiteMove2 = i - moves.men[1];
+  //   if (board[i] === 'm') {
+  //     boardEls[i].firstChild.removeEventListener('click', selectPiece);
+  //     board[i] = currentPlayer;
+  //   }
+  //   if (board[i] === 's') {
+  //     if (currentPlayer === 'r') {
+  //       if (board[redMove1] === '') {
+  //         board[redMove1] = 'd';
+  //         boardEls[redMove1].addEventListener('click', selectDestination);
+  //       }
+  //       if (board[redMove2] === '') {
+  //         board[redMove2] === 'd';
+  //         boardEls[redMove2].addEventListener('click', selectDestination);
+  //       }
+  //     }
+  //     if (currentPlayer === 'w') {
+  //       if(board[whiteMove1] === '') {
+  //         board[whiteMove1] = 'd';
+  //         boardEls[whiteMove1].addEventListener('click', selectDestination);
+  //       }
+  //       if(board[whiteMove2] === '') {
+  //         board[whiteMove2] = 'd';
+  //         boardEls[whiteMove2].addEventListener('click', selectDestination);
+  //       }
+  //     }
+  //   }
+  // }
+  determineJump();
+  console.log(`This is the board after selectPiece`);
+  console.log(board);
+}
+
+function determineMoves() {
   for (i = 0; i < board.length; i++) {
     let redMove1 = i + moves.men[0];
     let redMove2 = i + moves.men[1];
     let whiteMove1 = i - moves.men[0];
     let whiteMove2 = i - moves.men[1];
-    if (board[i] === 'm') {
-      boardEls[i].firstChild.removeEventListener('click', selectPiece);
-      board[i] = currentPlayer;
-    }
     if (board[i] === 's') {
       if (currentPlayer === 'r') {
-        // if (board[i + moves.men[0]])
         if (board[redMove1] === '') {
           board[redMove1] = 'd';
           boardEls[redMove1].addEventListener('click', selectDestination);
@@ -180,8 +218,32 @@ function selectPiece(evt) {
       }
     }
   }
-  console.log(`This is the board after selectPiece`);
-  console.log(board);
+}
+
+function determineJump() {
+  let selPieceIdx = board.indexOf('s');
+  let typMov = moves.men;
+  let counter = 0;
+  moves.jump.forEach(function (j) {
+    if (currentPlayer === 'r') {
+      if (
+        board[selPieceIdx + j] === '' &&
+        board[selPieceIdx + typMov[counter]] === 'w'
+        ) {
+        boardEls[selPieceIdx + j].addEventListener('click', selectDestination);
+      }
+      console.log(`Red can move fromselPieceIdx + j`);
+    }
+    if (currentPlayer === 'w') {
+      if (
+        board[selPieceIdx - j] === '' &&
+        board[selPieceIdx - typMov[counter]] === 'r'
+        ) {
+        boardEls[selPieceIdx + j].addEventListener('click', selectDestination);
+      }
+    }
+    counter ++;
+  });
 }
 
 function selectDestination(evt) {
