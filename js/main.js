@@ -29,26 +29,15 @@ function init() {
 }
 
 function initBoardState() {
+  let boundary = 8;
   for (i = 0; i < board.length; i++) {
     // empty strings hold state for playable tiles, null for non-playable
-    if (
-      i < 8 ||
-      i > 15 && i < 24 ||
-      i > 31 && i < 40 ||
-      i > 47 && i < 56
-    ) {
-      if (i % 2 !== 0) {
-        board[i] = '';
-      } else {
-        board[i] = null;
-      }
+    if (isOdd(boundary / 8)) {
+      board[i] = isOdd(i) ? '' : null;
     } else {
-      if (i % 2 === 0) {
-        board[i] = ''
-      } else {
-        board[i] = null;
-      }
+      board[i] = isOdd(i) ? null : '';
     }
+    if (i === boundary - 1) boundary += 8;
   }
 }
 
@@ -63,6 +52,12 @@ function initPieceState() {
     }
   }
 }
+
+function isOdd(num) {
+  if (num % 2 !== 0) {
+    return true;
+  }
+};
 
 function setupBoardView() {
   for (i = 0; i < board.length; i++) {
@@ -99,10 +94,10 @@ function takeTurn() {
   turnCounter += 1;
   currentPlayer = turnCounter % 2 !== 0 ? 'r' : 'w';
   prevPlayer = turnCounter % 2 === 0 ? 'r' : 'w';
-  console.log(turnCounter);
-  console.log(currentPlayer);
-  console.log(`This is the board at the beginning of a player's turn`);
-  console.log(board);
+  // console.log(turnCounter);
+  // console.log(currentPlayer);
+  // console.log(`This is the board at the beginning of a player's turn`);
+  // console.log(board);
   determineMoveablePieces();
 }
 
@@ -136,8 +131,8 @@ function determineMoveablePieces() {
       }
     }
   }
-  console.log(`This is the board after running determineMoveablePieces`);
-  console.log(board);
+  // console.log(`This is the board after running determineMoveablePieces`);
+  // console.log(board);
 }
 
 function selectPiece(evt) {
