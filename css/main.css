@@ -21,11 +21,13 @@ body {
 }
 
 div[grey="true"] {
-  background-color: #000105;
+  /* background-color: #000105; */
+  background-color: black;
 }
 
 div[grey="false"] {
-  background-color: #FDFFFA;
+  /* background-color: #FDFFFA; */
+  background-color: ivory;
 }
 
 .piece {
@@ -35,11 +37,15 @@ div[grey="false"] {
 }
 
 div[red="true"] {
-  background-color: #B00C17;
+  /* background-color: #B00C17; */
+  /* background-color: firebrick; */
+  background-color: red;
 }
 
 div[red="false"] {
-  background-color: #FDFFFA;
+  /* background-color: #FDFFFA; */
+  /* background-color: ivory; */
+  background-color: white;
 }
 
 div[selected] {
