@@ -148,22 +148,21 @@ function selectPiece(evt) {
     }
   }
   render();
-  determineMoves();
+  setMove();
   setJump();
   // console.log(`This is the board after selectPiece`);
   // console.log(board);
 }
 
 function setMove() {
-  for (i = 0; i < board.length; i++) {
-    for (j = 0; j < 2; j++) {
-      if (
-        board[i] === turn && board[i + turn * moves.men[j]] === 0
-      ) {
-        board[i + turn * moves.men[j]] = 'd';
-        squares[i + turn * moves.men[j]].addEventListener('click', selectPiece);
-        console.log(`${i + turn *moves.men[j]} is an available destination`);
-      }
+  let selPieceIdx = board.indexOf('s');
+  for (j = 0; j < 2; j++) {
+    if (
+      board[selPieceIdx + turn * moves.men[j]] === 0
+    ) {
+      console.log(`hitting jump`);
+      board[selPieceIdx + turn * moves.men[j]] = 'd';
+      squares[selPieceIdx + turn * moves.men[j]].addEventListener('click', selectDestination)
     }
   }
 }
@@ -174,10 +173,11 @@ function setJump() {
     if (
       board[selPieceIdx + turn * moves.men[j]] === turn * -1 &&
       board[selPieceIdx + turn * moves.jump[j]] === 0
-      ) {
+    ) {
       console.log(`hitting jump`);
+      board[selPieceIdx + turn * moves.jump[j]] = 'd';
       squares[selPieceIdx + turn * moves.jump[j]].addEventListener('click', selectDestination)
-      }
+    }
   }
 }
 
