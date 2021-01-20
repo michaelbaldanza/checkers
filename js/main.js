@@ -3,7 +3,7 @@ const board = new Array(64);
 
 const moves = {
   men: [9, 7],
-  jump: [18, 15], 
+  jump: [18, 14], 
   king: [9, 7, -9, -7] 
 };
 
@@ -24,7 +24,7 @@ init();
 function init() {
   initState();
   initView();
-  render();
+  // render();
   takeTurn();
 }
 
@@ -63,8 +63,8 @@ function initView() {
     if (board[i] === 1 || board[i] === -1) {
       let newPiece = document.createElement('div');
       newPiece.setAttribute('class', 'piece');
-      // if (board[i] === 1) newPiece.setAttribute('red', 'true');
-      // if (board[i] === -1) newPiece.setAttribute('red', 'false');
+      if (board[i] === 1) newPiece.setAttribute('red', 'true');
+      if (board[i] === -1) newPiece.setAttribute('red', 'false');
       // place each piece on its starting tile
       newSquare.appendChild(newPiece);
     }
@@ -74,12 +74,6 @@ function initView() {
 
 function render() {
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 1) {
-      squares[i].firstChild.setAttribute('red', 'true');
-    }
-    if (board[i] === -1) {
-      squares[i].firstChild.setAttribute('red', 'false');
-    }
     if (board[i] === 's') {
       squares[i].firstChild.setAttribute('selected', '');
     }
@@ -90,10 +84,6 @@ function takeTurn() {
   turnCounter += 1;
   currentPlayer = turnCounter % 2 !== 0 ? 1 : -1;
   turn *= -1;
-  // console.log(turnCounter);
-  // console.log(currentPlayer);
-  // console.log(`This is the board at the beginning of a player's turn`);
-  // console.log(board);
   getJump();
 }
 
@@ -101,35 +91,34 @@ function getJump() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     if (board[i] === turn) {
-      console.log(`hitting first condition`);
       for (j = 0; j < 2; j++) {
         if (
           board[i] === turn &&
           board[i + turn * moves.men[j]] === turn * -1 &&
           board[i + turn * moves.jump[j]] === 0
           ) {
-          console.log(`hitting jump`);
           squares[i].firstChild.addEventListener('click', selectPiece);
           board[i] = 'j';
-          }
+        }
       }
-      console.log(board.indexOf('j'));
-      if (board.indexOf('j') !== -1) {
-        return;
-      } else {
-        getMove();
-      }
+      // if (board.indexOf('j') !== -1) {
+      //   return;
+      // } else {
+      //   getMove();
+      // }
     }
+  }
+  if (board.indexOf('j') !== -1) {
+    return;
+  } else {
+    getMove();
   }
 }
 
 function getMove() {
   for (i = 0; i < board.length; i++) {
     for (j = 0; j < 2; j++) {
-      if (
-        board[i] === turn && board[i + turn * moves.men[j]] === 0
-      ) {
-        console.log(`hitting move`);
+      if (board[i] === turn && board[i + turn * moves.men[j]] === 0) {
         squares[i].firstChild.addEventListener('click', selectPiece);
         board[i] = 'm';
       }
@@ -139,6 +128,7 @@ function getMove() {
 
 function selectPiece(evt) {
   let selectedPiece = evt.target;
+  selectedPiece.setAttribute('selected', '');
   selectedPiece.removeEventListener('click', selectPiece);
   board[selectedPiece.parentElement.getAttribute('tileNo')] = 's';
   for (i = 0; i < board.length; i++) {
@@ -147,20 +137,15 @@ function selectPiece(evt) {
       board[i] = currentPlayer;
     }
   }
-  render();
+  // render();
   setMove();
   setJump();
-  // console.log(`This is the board after selectPiece`);
-  // console.log(board);
 }
 
 function setMove() {
   let selPieceIdx = board.indexOf('s');
   for (j = 0; j < 2; j++) {
-    if (
-      board[selPieceIdx + turn * moves.men[j]] === 0
-    ) {
-      console.log(`hitting jump`);
+    if (board[selPieceIdx + turn * moves.men[j]] === 0) {
       board[selPieceIdx + turn * moves.men[j]] = 'd';
       squares[selPieceIdx + turn * moves.men[j]].addEventListener('click', selectDestination)
     }
@@ -174,7 +159,6 @@ function setJump() {
       board[selPieceIdx + turn * moves.men[j]] === turn * -1 &&
       board[selPieceIdx + turn * moves.jump[j]] === 0
     ) {
-      console.log(`hitting jump`);
       board[selPieceIdx + turn * moves.jump[j]] = 'd';
       squares[selPieceIdx + turn * moves.jump[j]].addEventListener('click', selectDestination)
     }
@@ -185,7 +169,6 @@ function selectDestination(evt) {
   let selectedDestination = evt.target;
   let newIdx = Number(selectedDestination.getAttribute('tileNo'));
   let oldIdx = board.indexOf('s');
-  console.log(`${currentPlayer} moves from ${oldIdx} to ${newIdx}`);
   let selectedPiece = squares[oldIdx].firstChild;
   // move piece
   selectedDestination.appendChild(selectedPiece);
