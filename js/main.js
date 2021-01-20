@@ -1,6 +1,4 @@
 /*----- constants -----*/
-const board = new Array(64);
-
 const moves = {
   men: [9, 7],
   jump: [18, 14], 
@@ -8,46 +6,23 @@ const moves = {
 };
 
 /*----- app's state (variables) -----*/
-let turn;
-let turnCounter = 0;
-let currentPlayer;
-let playMoves;
-let playJump;
+let board, turn, turnCounter, currentPlayer, playMoves, playJump;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
 const squares = document.getElementsByClassName('square');
 
-
+/*----- functions -----*/
 init();
 
 function init() {
-  initState();
+  board = getBoard();
+  turn = -1;
+  turnCounter = 0;
   initView();
   // render();
   takeTurn();
 }
-
-function initState() {
-  let boundary = 8;
-  for (i = 0; i < board.length; i++) {
-    // empty strings hold state for playable tiles, null for non-playable
-    if (isOdd(boundary / 8)) {
-      board[i] = isOdd(i) ? 0 : null;
-    } else {
-      board[i] = isOdd(i) ? null : 0;
-    }
-    if (i === boundary - 1) boundary += 8;
-    // 1's represent red pieces, -1's white pieces
-    if (i < 24 && board[i] !== null) board[i] = 1;
-    if (i > 39 && board[i]!== null) board[i] = -1;
-  }
-  turn = -1;
-}
-
-function isOdd(num) {
-  if (num % 2 !== 0) return true;
-};
 
 function initView() {
   for (i = 0; i < board.length; i++) {
@@ -57,12 +32,14 @@ function initView() {
     newSquare.setAttribute('tileNo', i.toString());
     if (Number.isInteger(board[i])) {
       newSquare.setAttribute('grey', 'true');
+      newSquare.addEventListener('click', selectDest);
     } else {
       newSquare.setAttribute('grey', 'false');
     }
     if (board[i] === 1 || board[i] === -1) {
       let newPiece = document.createElement('div');
       newPiece.setAttribute('class', 'piece');
+      newPiece.addEventListener('click', selectPiece);
       if (board[i] === 1) newPiece.setAttribute('red', 'true');
       if (board[i] === -1) newPiece.setAttribute('red', 'false');
       // place each piece on its starting tile
@@ -97,15 +74,9 @@ function getJump() {
           board[i + turn * moves.men[j]] === turn * -1 &&
           board[i + turn * moves.jump[j]] === 0
           ) {
-          squares[i].firstChild.addEventListener('click', selectPiece);
           board[i] = 'j';
         }
       }
-      // if (board.indexOf('j') !== -1) {
-      //   return;
-      // } else {
-      //   getMove();
-      // }
     }
   }
   if (board.indexOf('j') !== -1) {
@@ -119,7 +90,6 @@ function getMove() {
   for (i = 0; i < board.length; i++) {
     for (j = 0; j < 2; j++) {
       if (board[i] === turn && board[i + turn * moves.men[j]] === 0) {
-        squares[i].firstChild.addEventListener('click', selectPiece);
         board[i] = 'm';
       }
     }
@@ -127,13 +97,13 @@ function getMove() {
 }
 
 function selectPiece(evt) {
-  let selectedPiece = evt.target;
-  selectedPiece.setAttribute('selected', '');
-  selectedPiece.removeEventListener('click', selectPiece);
-  board[selectedPiece.parentElement.getAttribute('tileNo')] = 's';
+  let selPiece = evt.target;
+  let sqIdx = Number(selPiece.parentElement.getAttribute('tileNo'));
+  if (typeof(board[sqIdx]) !== 'string') return;
+  selPiece.setAttribute('selected', '');
+  board[selPiece.parentElement.getAttribute('tileNo')] = 's';
   for (i = 0; i < board.length; i++) {
     if (board[i] === 'm') {
-      squares[i].firstChild.removeEventListener('click', selectPiece);
       board[i] = currentPlayer;
     }
   }
@@ -147,7 +117,6 @@ function setMove() {
   for (j = 0; j < 2; j++) {
     if (board[selPieceIdx + turn * moves.men[j]] === 0) {
       board[selPieceIdx + turn * moves.men[j]] = 'd';
-      squares[selPieceIdx + turn * moves.men[j]].addEventListener('click', selectDestination)
     }
   }
 }
@@ -160,28 +129,48 @@ function setJump() {
       board[selPieceIdx + turn * moves.jump[j]] === 0
     ) {
       board[selPieceIdx + turn * moves.jump[j]] = 'd';
-      squares[selPieceIdx + turn * moves.jump[j]].addEventListener('click', selectDestination)
     }
   }
 }
 
-function selectDestination(evt) {
-  let selectedDestination = evt.target;
-  let newIdx = Number(selectedDestination.getAttribute('tileNo'));
+function selectDest(evt) {
+  let selDest = evt.target;
+  let newIdx = Number(selDest.getAttribute('tileNo'));
+  if (board[newIdx] !== 'd') return;
   let oldIdx = board.indexOf('s');
-  let selectedPiece = squares[oldIdx].firstChild;
+  let selPiece = squares[oldIdx].firstChild;
   // move piece
-  selectedDestination.appendChild(selectedPiece);
-  selectedPiece.removeAttribute('selected');
+  selDest.appendChild(selPiece);
+  selPiece.removeAttribute('selected');
   // 
-  selectedDestination.removeEventListener('click', selectDestination);
   board[oldIdx] = 0;
   board[newIdx] = currentPlayer;
   for (i = 0; i < board.length; i++) {
     if (board[i] === 'd') {
-      squares[i].removeEventListener('click', selectDestination);
       board[i] = 0;
     }
   }
   takeTurn();
 }
+
+function getBoard() {
+  const game = new Array(64);
+  let boundary = 8;
+  for (i = 0; i < game.length; i++) {
+    // empty strings hold state for playable tiles, null for non-playable
+    if (isOdd(boundary / 8)) {
+      game[i] = isOdd(i) ? 0 : null;
+    } else {
+      game[i] = isOdd(i) ? null : 0;
+    }
+    if (i === boundary - 1) boundary += 8;
+    // 1's represent red pieces, -1's white pieces
+    if (i < 24 && game[i] !== null) game[i] = 1;
+    if (i > 39 && game[i]!== null) game[i] = -1;
+  }
+  return game;
+}
+
+function isOdd(num) {
+  if (num % 2 !== 0) return true;
+};
