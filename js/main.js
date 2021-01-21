@@ -5,6 +5,12 @@ const moves = {
   king: [9, 7, -9, -7] 
 };
 
+if (-1) {
+  console.log(`it's true`)
+} else {
+  console.log(`it's false`)
+}
+
 /*----- app's state (variables) -----*/
 let board, turn, turnCounter, currentPlayer, playMoves, playJump;
 
@@ -128,20 +134,28 @@ function setJump() {
       board[selPieceIdx + turn * moves.men[j]] === turn * -1 &&
       board[selPieceIdx + turn * moves.jump[j]] === 0
     ) {
+      board[selPieceIdx + turn * moves.men[j]] = 'q';
       board[selPieceIdx + turn * moves.jump[j]] = 'd';
     }
   }
 }
 
 function selectDest(evt) {
+  console.log(board);
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
+  console.log(board.indexOf('q'));
   if (board[newIdx] !== 'd') return;
   let oldIdx = board.indexOf('s');
   let selPiece = squares[oldIdx].firstChild;
   // move piece
   selDest.appendChild(selPiece);
   selPiece.removeAttribute('selected');
+  let qIdx = board.indexOf('q');
+  if (qIdx !== -1) {
+    squares[qIdx].firstChild.remove();
+    board[qIdx] = 0;
+  }
   // 
   board[oldIdx] = 0;
   board[newIdx] = currentPlayer;
@@ -150,6 +164,7 @@ function selectDest(evt) {
       board[i] = 0;
     }
   }
+  console.log(board);
   takeTurn();
 }
 
