@@ -38,18 +38,49 @@ div[grey="false"] {
   box-shadow: inset 0 0 20px rgb(43, 154, 158);
 }
 
-div[red="true"] {
+div[color="red"] {
   /* background-color: #B00C17; */
   /* background-color: firebrick; */
   background-color: red;
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 50%;
+  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
+  box-shadow: inset 0 0 20px rgb(43, 154, 158);
 }
 
-div[red="false"] {
+div[color="white"] {
   /* background-color: #FDFFFA; */
   /* background-color: ivory; */
   background-color: white;
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 50%;
+  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
+  box-shadow: inset 0 0 20px rgb(43, 154, 158);
+}
+
+div[color="yellow"] {
+  /* background-color: #FDFFFA; */
+  /* background-color: ivory; */
+  background-color: yellow;
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 50%;
+  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
+  box-shadow: inset 0 0 20px rgb(43, 154, 158);
 }
 
 div[selected] {
   background-color: yellow;
+}
+
+div[king] {
+  background: repeating-linear-gradient(
+  45deg,
+  #606dbc,
+  #606dbc 10px,
+  #465298 10px,
+  #465298 20px
+);
 }

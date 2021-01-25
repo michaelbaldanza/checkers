@@ -5,12 +5,6 @@ const moves = {
   king: [9, 7, -9, -7] 
 };
 
-if (-1) {
-  console.log(`it's true`)
-} else {
-  console.log(`it's false`)
-}
-
 /*----- app's state (variables) -----*/
 let board, turn, turnCounter, currentPlayer, playMoves, playJump;
 
@@ -26,7 +20,7 @@ function init() {
   turn = -1;
   turnCounter = 0;
   initView();
-  // render();
+  render();
   takeTurn();
 }
 
@@ -39,27 +33,26 @@ function initView() {
     if (Number.isInteger(board[i])) {
       newSquare.setAttribute('grey', 'true');
       newSquare.addEventListener('click', selectDest);
+      let newPiece = document.createElement('div');
+      newPiece.addEventListener('click', selectPiece);
+      newSquare.appendChild(newPiece);
     } else {
       newSquare.setAttribute('grey', 'false');
-    }
-    if (board[i] === 1 || board[i] === -1) {
-      let newPiece = document.createElement('div');
-      newPiece.setAttribute('class', 'piece');
-      newPiece.addEventListener('click', selectPiece);
-      if (board[i] === 1) newPiece.setAttribute('red', 'true');
-      if (board[i] === -1) newPiece.setAttribute('red', 'false');
-      // place each piece on its starting tile
-      newSquare.appendChild(newPiece);
     }
     boardContainerEl.appendChild(newSquare);
   }
 }
 
-function render() {
+function render(pieceIdx, destIdx) {
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 's') {
-      squares[i].firstChild.setAttribute('selected', '');
+    let piece = squares[i].firstChild
+    if (board[i] === 's') piece.setAttribute('color', 'yellow');
+    if (Math.round(board[i]) === 1) piece.setAttribute('color', 'red');
+    if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
+    if (!Number.isInteger(board[i]) && isNum(board[i])) {
+      piece.setAttribute('king', 'true');
     }
+    if (board[i] === 0) piece.setAttribute('color', '');
   }
 }
 
@@ -106,14 +99,11 @@ function selectPiece(evt) {
   let selPiece = evt.target;
   let sqIdx = Number(selPiece.parentElement.getAttribute('tileNo'));
   if (typeof(board[sqIdx]) !== 'string') return;
-  selPiece.setAttribute('selected', '');
-  board[selPiece.parentElement.getAttribute('tileNo')] = 's';
+  board[sqIdx] = 's';
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 'm') {
-      board[i] = currentPlayer;
-    }
+    if (board[i] === 'm') board[i] = currentPlayer;
   }
-  // render();
+  render();
   setMove();
   setJump();
 }
@@ -144,26 +134,16 @@ function selectDest(evt) {
   console.log(board);
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
-  console.log(board.indexOf('q'));
   if (board[newIdx] !== 'd') return;
   let oldIdx = board.indexOf('s');
-  let selPiece = squares[oldIdx].firstChild;
-  // move piece
-  selDest.appendChild(selPiece);
-  selPiece.removeAttribute('selected');
-  let qIdx = board.indexOf('q');
-  if (qIdx !== -1) {
-    squares[qIdx].firstChild.remove();
-    board[qIdx] = 0;
-  }
-  // 
   board[oldIdx] = 0;
   board[newIdx] = currentPlayer;
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 'd') {
+    if (board[i] === 'd' || board[i] === 'q') {
       board[i] = 0;
     }
   }
+  render();
   console.log(board);
   takeTurn();
 }
@@ -189,3 +169,15 @@ function getBoard() {
 function isOdd(num) {
   if (num % 2 !== 0) return true;
 };
+
+function isNeg1(num) {
+  if (num === -1) return true;
+}
+
+function isNum(num) {
+  if (typeof(num) === 'num') return true;
+}
+
+function isNonZero(num) {
+  if (typeof(num) === 'number' && num !== 0) return true;
+}
