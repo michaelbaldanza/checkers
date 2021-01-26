@@ -7,7 +7,7 @@ const moves = {
 };
 
 /*----- app's state (variables) -----*/
-let board, turn;
+let board, turn, canJump;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
@@ -32,7 +32,8 @@ function initView() {
     newSquare.setAttribute('tileNo', i.toString());
     if (Number.isInteger(board[i])) {
       newSquare.setAttribute('grey', 'true');
-      newSquare.addEventListener('click', selectDest);
+      newSquare.addEventListener('click', selectMove);
+      newSquare.addEventListener('click', selectJump)
       let newPiece = document.createElement('div');
       newPiece.addEventListener('click', selectPiece);
       newSquare.appendChild(newPiece);
@@ -58,7 +59,9 @@ function render() {
 
 function takeTurn() {
   turn *= -1;
+  canJump = false;
   getJump();
+  if (board.indexOf('j') === -1) getMove();
 }
 
 function getJump() {
@@ -76,7 +79,6 @@ function getJump() {
       }
     }
   }
-  if (board.indexOf('j') === -1) getMove();
 }
 
 function getMove() {
@@ -118,22 +120,51 @@ function setJump() {
     ) {
       board[selPieceIdx + turn * moves.men[j]] = 'q';
       board[selPieceIdx + turn * moves.jump[j]] = 'd';
+      canJump = true;
     }
   }
 }
 
-function selectDest(evt) {
-  console.log(board);
+function selectMove(evt) {
+  if (board.indexOf('q') !== -1) return;
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
   if (board[newIdx] !== 'd') return;
+  console.log(`selectMove triggered`);
+  canJump = false;
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
   board[newIdx] = turn;
   resetStrings();
   render();
-  console.log(board);
   takeTurn();
+}
+
+function selectJump(evt) {
+  if (board.indexOf('q') === -1) return;
+  let selDest = evt.target;
+  let newIdx = Number(selDest.getAttribute('tileNo'));
+  if (board[newIdx] !== 'd') return;
+  console.log(`selectJump triggered`);
+  canJump = false;
+  let oldIdx = board.indexOf('s');
+  board[oldIdx] = 0;
+  board[newIdx] = 's';
+  console.log(`This is the baord after the first jump`);
+  console.log(board)
+  resetStrings();
+  render();
+  setJump();
+  if (canJump) {
+    console.log(canJump);
+    console.log(board);
+    return;
+  } else {
+    board[newIdx] = turn;
+    resetStrings();
+    render();
+    takeTurn();
+  }
 }
 
 function getBoard() {
