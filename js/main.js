@@ -7,7 +7,7 @@ const moves = {
 };
 
 /*----- app's state (variables) -----*/
-let board, turn, turnCounter, currentPlayer;
+let board, turn;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
@@ -19,7 +19,6 @@ init();
 function init() {
   board = getBoard();
   turn = -1;
-  turnCounter = 0;
   initView();
   render();
   takeTurn();
@@ -58,8 +57,6 @@ function render() {
 }
 
 function takeTurn() {
-  turnCounter += 1;
-  currentPlayer = turnCounter % 2 !== 0 ? 1 : -1;
   turn *= -1;
   getJump();
 }
@@ -132,7 +129,7 @@ function selectDest(evt) {
   if (board[newIdx] !== 'd') return;
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
-  board[newIdx] = currentPlayer;
+  board[newIdx] = turn;
   resetStrings();
   render();
   console.log(board);
@@ -159,7 +156,7 @@ function getBoard() {
 
 function resetStrings() {
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 'm' || board[i] === 'j') board[i] = currentPlayer;
+    if (board[i] === 'm' || board[i] === 'j') board[i] = turn;
     if (board[i] === 'd' || board[i] === 'q') board[i] = 0;
   }
 }
