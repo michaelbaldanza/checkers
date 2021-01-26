@@ -43,7 +43,7 @@ function initView() {
   }
 }
 
-function render(pieceIdx, destIdx) {
+function render() {
   for (i = 0; i < board.length; i++) {
     let piece = squares[i].firstChild
     if (board[i] === 's') piece.setAttribute('color', 'yellow');
@@ -139,7 +139,7 @@ function selectDest(evt) {
   board[oldIdx] = 0;
   board[newIdx] = currentPlayer;
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 'd' || board[i] === 'q') {
+    if (board[i] === 'd' || board[i] === 'q' || board[i] === 'j') {
       board[i] = 0;
     }
   }
