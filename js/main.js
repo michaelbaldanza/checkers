@@ -2,7 +2,8 @@
 const moves = {
   men: [9, 7],
   jump: [18, 14], 
-  king: [9, 7, -9, -7] 
+  king: [9, 7, -9, -7],
+  kingJump: [18, 14, -18, -14]
 };
 
 /*----- app's state (variables) -----*/
@@ -139,9 +140,10 @@ function selectDest(evt) {
   board[oldIdx] = 0;
   board[newIdx] = currentPlayer;
   for (i = 0; i < board.length; i++) {
-    if (board[i] === 'd' || board[i] === 'q' || board[i] === 'j') {
+    if (board[i] === 'd' || board[i] === 'q') {
       board[i] = 0;
     }
+    if (board[i] === 'j') board[i] === currentPlayer;
   }
   render();
   console.log(board);
