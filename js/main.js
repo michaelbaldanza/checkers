@@ -7,7 +7,7 @@ const moves = {
 };
 
 /*----- app's state (variables) -----*/
-let board, turn, turnCounter, currentPlayer, playMoves, playJump;
+let board, turn, turnCounter, currentPlayer;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
@@ -79,11 +79,7 @@ function getJump() {
       }
     }
   }
-  if (board.indexOf('j') !== -1) {
-    return;
-  } else {
-    getMove();
-  }
+  if (board.indexOf('j') === -1) getMove();
 }
 
 function getMove() {
@@ -101,9 +97,7 @@ function selectPiece(evt) {
   let sqIdx = Number(selPiece.parentElement.getAttribute('tileNo'));
   if (typeof(board[sqIdx]) !== 'string') return;
   board[sqIdx] = 's';
-  for (i = 0; i < board.length; i++) {
-    if (board[i] === 'm') board[i] = currentPlayer;
-  }
+  resetStrings();
   render();
   setMove();
   setJump();
@@ -139,12 +133,7 @@ function selectDest(evt) {
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
   board[newIdx] = currentPlayer;
-  for (i = 0; i < board.length; i++) {
-    if (board[i] === 'd' || board[i] === 'q') {
-      board[i] = 0;
-    }
-    if (board[i] === 'j') board[i] === currentPlayer;
-  }
+  resetStrings();
   render();
   console.log(board);
   takeTurn();
@@ -166,6 +155,13 @@ function getBoard() {
     if (i > 39 && game[i]!== null) game[i] = -1;
   }
   return game;
+}
+
+function resetStrings() {
+  for (i = 0; i < board.length; i++) {
+    if (board[i] === 'm' || board[i] === 'j') board[i] = currentPlayer;
+    if (board[i] === 'd' || board[i] === 'q') board[i] = 0;
+  }
 }
 
 function isOdd(num) {
