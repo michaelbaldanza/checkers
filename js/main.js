@@ -128,7 +128,6 @@ function selectMove(evt) {
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
   if (board[newIdx] !== 'd') return;
-  canJump = false;
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
   if (getMoveType(oldIdx, newIdx)) {
@@ -137,6 +136,7 @@ function selectMove(evt) {
     board[newIdx] = 's';
     resetStrings();
     render();
+    canJump = false;
     setJump();
     if (canJump) {
       return;
