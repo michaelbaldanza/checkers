@@ -33,7 +33,6 @@ function initView() {
     if (Number.isInteger(board[i])) {
       newSquare.setAttribute('grey', 'true');
       newSquare.addEventListener('click', selectMove);
-      newSquare.addEventListener('click', selectJump)
       let newPiece = document.createElement('div');
       newPiece.addEventListener('click', selectPiece);
       newSquare.appendChild(newPiece);
@@ -126,44 +125,24 @@ function setJump() {
 }
 
 function selectMove(evt) {
-  if (board.indexOf('q') !== -1) return;
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
   if (board[newIdx] !== 'd') return;
-  console.log(`selectMove triggered`);
   canJump = false;
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
-  board[newIdx] = turn;
-  resetStrings();
-  render();
-  takeTurn();
-}
-
-function selectJump(evt) {
-  if (board.indexOf('q') === -1) return;
-  let selDest = evt.target;
-  let newIdx = Number(selDest.getAttribute('tileNo'));
-  if (board[newIdx] !== 'd') return;
-  console.log(`selectJump triggered`);
-  canJump = false;
-  let oldIdx = board.indexOf('s');
-  board[oldIdx] = 0;
-  board[newIdx] = 's';
-  console.log(`This is the baord after the first jump`);
-  console.log(board)
-  resetStrings();
-  render();
-  setJump();
-  if (canJump) {
-    console.log(canJump);
-    console.log(board);
-    return;
+  if (getMoveType(oldIdx, newIdx)) {
+    endTurn(newIdx);
   } else {
-    board[newIdx] = turn;
+    board[newIdx] = 's';
     resetStrings();
     render();
-    takeTurn();
+    setJump();
+    if (canJump) {
+      return;
+    } else {
+      endTurn(newIdx);
+    }
   }
 }
 
@@ -206,4 +185,18 @@ function isNum(num) {
 
 function isNonZero(num) {
   if (typeof(num) === 'number' && num !== 0) return true;
+}
+
+function getMoveType(oldIdx, newIdx) {
+  let moveOrJump;
+  if (moves.men.indexOf(oldIdx + newIdx * turn) !== -1) moveOrJump = true;
+  if (moves.jump.indexOf(oldIdx + newIdx * turn) !== -1) moveOrJump = false;
+  return moveOrJump;
+}
+
+function endTurn(newIdx) {
+  board[newIdx] = turn;
+  resetStrings();
+  render();
+  takeTurn();
 }
