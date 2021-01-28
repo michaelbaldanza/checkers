@@ -66,17 +66,15 @@ function takeTurn() {
 function getJump() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
-    if (board[i] === turn) {
-      for (j = 0; j < 2; j++) {
-        if (
-          board[i] === turn &&
-          board[i + turn * moves.men[j]] === turn * -1 &&
-          board[i + turn * moves.jump[j]] === 0
-          ) {
-          board[i] = 'j';
-        }
+    for (j = 0; j < 2; j++) {
+      if (
+        board[i] === turn &&
+        board[i + turn * moves.men[j]] === turn * -1 &&
+        board[i + turn * moves.jump[j]] === 0
+        ) {
+        board[i] = 'j';
       }
-    }
+    } 
   }
 }
 
@@ -131,6 +129,7 @@ function selectMove(evt) {
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
   if (getMoveType(oldIdx, newIdx)) {
+    console.log(getMoveType(oldIdx, newIdx));
     endTurn(newIdx);
   } else {
     board[newIdx] = 's';
@@ -188,10 +187,8 @@ function isNonZero(num) {
 }
 
 function getMoveType(oldIdx, newIdx) {
-  let moveOrJump;
-  if (moves.men.indexOf(oldIdx + newIdx * turn) !== -1) moveOrJump = true;
-  if (moves.jump.indexOf(oldIdx + newIdx * turn) !== -1) moveOrJump = false;
-  return moveOrJump;
+  if (Math.abs(moves.men.indexOf(oldIdx - newIdx)) !== -1) return true;
+  if (Math.abs(moves.jump.indexOf(oldIdx - newIdx)) !== -1) return false;
 }
 
 function endTurn(newIdx) {
