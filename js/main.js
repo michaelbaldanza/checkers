@@ -6,6 +6,16 @@ const moves = {
   kingJump: [18, 14, -18, -14]
 };
 
+let myArr = [];
+
+if (myArr.length) {
+  console.log(`truthy`);
+} else {
+  console.log(`falsy`);
+}
+
+console.log(myArr);
+
 /*----- app's state (variables) -----*/
 let board, turn, canJump, canMove, availJumps, availMoves;
 
@@ -69,10 +79,10 @@ function getJump() {
     // select the indices modeling the current player's pieces
     for (j = 0; j < 2; j++) {
       if (
-        board[i] === turn &&
+        Math.round(board[i]) === turn &&
         board[i + turn * moves.men[j]] === turn * -1 &&
         board[i + turn * moves.jump[j]] === 0
-        ) {
+      ) {
         board[i] = 'j';
       }
     } 
@@ -82,7 +92,10 @@ function getJump() {
 function getMove() {
   for (i = 0; i < board.length; i++) {
     for (j = 0; j < 2; j++) {
-      if (board[i] === turn && board[i + turn * moves.men[j]] === 0) {
+      if (
+        Math.round(board[i]) === turn &&
+        board[i + turn * moves.men[j]] === 0
+      ) {
         board[i] = 'm';
       }
     }
@@ -113,7 +126,7 @@ function setJump() {
   let selPieceIdx = board.indexOf('s');
   for (j = 0; j < 2; j++) {
     if (
-      board[selPieceIdx + turn * moves.men[j]] === turn * -1 &&
+      Math.round(board[selPieceIdx + turn * moves.men[j]]) === turn * -1 &&
       board[selPieceIdx + turn * moves.jump[j]] === 0
     ) {
       board[selPieceIdx + turn * moves.men[j]] = 'q';
@@ -192,4 +205,12 @@ function endTurn(newIdx) {
   resetStrings();
   render();
   takeTurn();
+}
+
+function checkMove(idx, arr) {
+
+}
+
+function checkJump(idx, arr) {
+
 }
