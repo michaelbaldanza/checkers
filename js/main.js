@@ -74,12 +74,28 @@ function takeTurn() {
   console.log(board);
 }
 
+// function getJump() {
+//   for (i = 0; i < board.length; i++) {
+//     // select the indices modeling the current player's pieces
+//     for (j = 0; j < 2; j++) {
+//       if (
+//         Math.round(board[i]) === turn &&
+//         board[i + turn * moves.men[j]] === turn * -1 &&
+//         board[i + turn * moves.jump[j]] === 0
+//       ) {
+//         board[i] = 'j';
+//       }
+//     } 
+//   }
+// }
+
 function getJump() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     for (j = 0; j < 2; j++) {
       if (
         Math.round(board[i]) === turn &&
+        Number.isInteger(board[i]) &&
         board[i + turn * moves.men[j]] === turn * -1 &&
         board[i + turn * moves.jump[j]] === 0
       ) {
@@ -94,6 +110,7 @@ function getMove() {
     for (j = 0; j < 2; j++) {
       if (
         Math.round(board[i]) === turn &&
+        Number.isInteger(board[i]) &&
         board[i + turn * moves.men[j]] === 0
       ) {
         board[i] = 'm';
@@ -126,7 +143,7 @@ function setJump() {
   let selPieceIdx = board.indexOf('s');
   for (j = 0; j < 2; j++) {
     if (
-      Math.round(board[selPieceIdx + turn * moves.men[j]]) === turn * -1 &&
+      board[selPieceIdx + turn * moves.men[j]] === turn * -1 &&
       board[selPieceIdx + turn * moves.jump[j]] === 0
     ) {
       board[selPieceIdx + turn * moves.men[j]] = 'q';
