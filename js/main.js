@@ -7,7 +7,7 @@ const moves = {
 };
 
 /*----- app's state (variables) -----*/
-let board, turn, canJump;
+let board, turn, canJump, canMove, availJumps, availMoves;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
@@ -32,7 +32,7 @@ function initView() {
     newSquare.setAttribute('tileNo', i.toString());
     if (Number.isInteger(board[i])) {
       newSquare.setAttribute('grey', 'true');
-      newSquare.addEventListener('click', selectMove);
+      newSquare.addEventListener('click', selectDest);
       let newPiece = document.createElement('div');
       newPiece.addEventListener('click', selectPiece);
       newSquare.appendChild(newPiece);
@@ -49,7 +49,7 @@ function render() {
     if (board[i] === 's') piece.setAttribute('color', 'yellow');
     if (Math.round(board[i]) === 1) piece.setAttribute('color', 'red');
     if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
-    if (!Number.isInteger(board[i]) && isNum(board[i])) {
+    if (!Number.isInteger(board[i]) && typeof(board[i]) === 'number') {
       piece.setAttribute('king', 'true');
     }
     if (board[i] === 0) piece.setAttribute('color', '');
@@ -61,6 +61,7 @@ function takeTurn() {
   canJump = false;
   getJump();
   if (board.indexOf('j') === -1) getMove();
+  console.log(board);
 }
 
 function getJump() {
@@ -122,7 +123,7 @@ function setJump() {
   }
 }
 
-function selectMove(evt) {
+function selectDest(evt) {
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
   if (board[newIdx] !== 'd') return;
@@ -178,17 +179,12 @@ function isNeg1(num) {
   if (num === -1) return true;
 }
 
-function isNum(num) {
-  if (typeof(num) === 'num') return true;
-}
-
 function isNonZero(num) {
   if (typeof(num) === 'number' && num !== 0) return true;
 }
 
 function getMoveType(oldIdx, newIdx) {
-  if (Math.abs(moves.men.indexOf(oldIdx - newIdx)) !== -1) return true;
-  if (Math.abs(moves.jump.indexOf(oldIdx - newIdx)) !== -1) return false;
+  if (moves.men.indexOf(Math.abs(oldIdx - newIdx)) !== -1) return true;
 }
 
 function endTurn(newIdx) {
