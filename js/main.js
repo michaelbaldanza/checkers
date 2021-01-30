@@ -6,11 +6,12 @@ const moves = {
   kingJump: [18, 14, -18, -14]
 };
 
-let men = [9, 7];
-let jump = [18, 14];
+let myArr = [];
+console.log(myArr.indexOf(1));
+
 
 /*----- app's state (variables) -----*/
-let board, turn, canJump, canMove, availJumps, availMoves;
+let board, turn, selPieceIdx, canJump, canMove, availJumps, availMoves;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
@@ -22,6 +23,7 @@ init();
 function init() {
   board = getBoard();
   turn = -1;
+  selPieceIdx = 0;
   initView();
   render();
   takeTurn();
@@ -49,7 +51,7 @@ function initView() {
 function render() {
   for (i = 0; i < board.length; i++) {
     let piece = squares[i].firstChild
-    if (board[i] === 's') piece.setAttribute('color', 'yellow');
+    // if (board[i] === 's') piece.setAttribute('color', 'yellow');
     if (Math.round(board[i]) === 1) piece.setAttribute('color', 'red');
     if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
     if (!Number.isInteger(board[i]) && typeof(board[i]) === 'number') {
@@ -57,11 +59,16 @@ function render() {
     }
     if (board[i] === 0) piece.setAttribute('color', '');
   }
+  if (selPieceIdx !== 0) squares[selPieceIdx].firstChild.setAttribute('color', 'yellow');
 }
 
 function takeTurn() {
   turn *= -1;
-  canJump = false;
+  canJump = [];
+  canMove = [];
+  availJumps = [];
+  availMoves = [];
+  mustJump = false;
   getJump();
   if (board.indexOf('j') === -1) getMove();
 }
@@ -69,14 +76,16 @@ function takeTurn() {
 function getJump() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
+    let jumps = checkJump(i, moves.men, moves.jump);
     if (
       Math.round(board[i]) === turn &&
       Number.isInteger(board[i]) &&
-      checkJump(i, moves.men, moves.jump)
+      jumps.length
     ) {
-      board[i] = 'j';
+      canJump.push(i);
     }
   }
+  console.log(canJump);
 }
 
 function getMove() {
@@ -86,63 +95,99 @@ function getMove() {
       Number.isInteger(board[i]) &&
       checkMove(i, moves.men)
     ) {
-      board[i] = 'm';
+      canMove.push(i);
     }
   }
+  console.log(canMove);
 }
 
 function selectPiece(evt) {
   let selPiece = evt.target;
-  let sqIdx = Number(selPiece.parentElement.getAttribute('tileNo'));
-  if (typeof(board[sqIdx]) !== 'string') return;
-  board[sqIdx] = 's';
-  resetStrings();
-  render();
-  setMove();
-  setJump();
+  selPieceIdx = Number(selPiece.parentElement.getAttribute('tileNo'));
+  if (
+    canJump.indexOf(selPieceIdx) !== -1 ||
+    canMove.indexOf(selPieceIdx) !== -1
+  ) {
+    // board[sqIdx] = 's';
+    resetStrings();
+    render();
+    setJump(selPieceIdx);
+    if (canMove.length) setMove();
+  }
+  // if (typeof(board[sqIdx]) !== 'string') return;
+  // board[sqIdx] = 's';
+  // resetStrings();
+  // render();
+  // setMove();
+  // setJump();
 }
 
 function setMove() {
-  let selPieceIdx = board.indexOf('s');
-  let theMoves = checkMove(selPieceIdx, moves.men);
-  theMoves.forEach(function (move) {
-    board[move] = 'd';
-  })
+  // let selPieceIdx = board.indexOf('s');
+  availMoves = checkMove(selPieceIdx, moves.men);
+  console.log(availMoves);
+  // availMoves.forEach(function (move) {
+  //   board[move] = 'd';
+  // })
 }
 
-function setJump() {
-  let selPieceIdx = board.indexOf('s');
-  let jumps = checkJump(selPieceIdx, moves.men, moves.jump);
-  if (jumps) {
-    jumps.forEach(function (pair) {
-      board[pair[0]] = 'q';
-      board[pair[1]] = 'd';
-    });
-    canJump = true;
+function setJump(idx) {
+  // let selPieceIdx = board.indexOf('s');
+  availJumps = checkJump(idx, moves.men, moves.jump);
+  if (availJumps) {
+    // availJumps.forEach(function (pair) {
+    //   board[pair[0]] = 'q';
+    //   board[pair[1]] = 'd';
+    // });
+    mustJump = true;
   }
-  console.log(board);
 }
 
 function selectDest(evt) {
   let selDest = evt.target;
   let newIdx = Number(selDest.getAttribute('tileNo'));
-  if (board[newIdx] !== 'd') return;
-  let oldIdx = board.indexOf('s');
-  board[oldIdx] = 0;
-  if (getMoveType(oldIdx, newIdx)) {
-    endTurn(newIdx);
-  } else {
-    board[newIdx] = 's';
-    resetStrings();
-    render();
-    canJump = false;
-    setJump();
-    if (canJump) {
-      return;
+  if (
+    availJumps.indexOf(newIdx) !== -1 ||
+    availMoves.indexOf(newIdx) !== -1
+  ) {
+    console.log( `hitting selDest`);
+    console.log(`${selPieceIdx} is moving to ${newIdx}`);
+    board[selPieceIdx] = 0;
+    board[newIdx] = turn;
+    console.log(board)
+    if (availJumps.length) {
+      availJumps = [];
+      setJump(newIdx);
+      if (availJumps.length) {
+        selPieceIdx = newIdx;
+        render();
+        return;
+      } else {
+        endTurn(newIdx);
+      }
     } else {
       endTurn(newIdx);
     }
   }
+  // let selDest = evt.target;
+  // let newIdx = Number(selDest.getAttribute('tileNo'));
+  // if (board[newIdx] !== 'd') return;
+  // let oldIdx = board.indexOf('s');
+  // board[oldIdx] = 0;
+  // if (getMoveType(oldIdx, newIdx)) {
+  //   endTurn(newIdx);
+  // } else {
+  //   board[newIdx] = 's';
+  //   resetStrings();
+  //   render();
+  //   mustJump = false;
+  //   setJump();
+  //   if (mustJump) {
+  //     return;
+  //   } else {
+  //     endTurn(newIdx);
+  //   }
+  // }
 }
 
 function getBoard() {
@@ -188,6 +233,7 @@ function getMoveType(oldIdx, newIdx) {
 
 function endTurn(newIdx) {
   board[newIdx] = turn;
+  selPieceIdx = 0;
   resetStrings();
   render();
   takeTurn();
@@ -200,14 +246,13 @@ function checkJump(idx, moveArr, jumpArr) {
       board[idx + turn * moveArr[l]] === turn * -1 &&
       board[idx + turn * jumpArr[l]] === 0
     ) {
-      let quarry = idx + turn * moveArr[l];
-      let dest = idx + turn * jumpArr[l];
-      let specJump = [quarry, dest]
-      jumps.push(specJump);
+      // let quarry = idx + turn * moveArr[l];
+      // let dest = idx + turn * jumpArr[l];
+      // let specJump = [quarry, dest]
+      // jumps.push(specJump);
+      jumps.push(idx + turn * jumpArr[l])
     }
-    if (jumps.length) {
-      return jumps;
-    }
+  return jumps;
   }
 }
 
@@ -218,5 +263,5 @@ function checkMove(idx, moveArr) {
       regMoves.push(idx + turn * moveArr[l]);
     }
   }
-  return regMoves;
+  if (regMoves.length) return regMoves;
 }
