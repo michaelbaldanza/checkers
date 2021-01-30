@@ -6,15 +6,8 @@ const moves = {
   kingJump: [18, 14, -18, -14]
 };
 
-let myArr = [];
-
-if (myArr.length) {
-  console.log(`truthy`);
-} else {
-  console.log(`falsy`);
-}
-
-console.log(myArr);
+let men = [9, 7];
+let jump = [18, 14];
 
 /*----- app's state (variables) -----*/
 let board, turn, canJump, canMove, availJumps, availMoves;
@@ -71,50 +64,29 @@ function takeTurn() {
   canJump = false;
   getJump();
   if (board.indexOf('j') === -1) getMove();
-  console.log(board);
 }
-
-// function getJump() {
-//   for (i = 0; i < board.length; i++) {
-//     // select the indices modeling the current player's pieces
-//     for (j = 0; j < 2; j++) {
-//       if (
-//         Math.round(board[i]) === turn &&
-//         board[i + turn * moves.men[j]] === turn * -1 &&
-//         board[i + turn * moves.jump[j]] === 0
-//       ) {
-//         board[i] = 'j';
-//       }
-//     } 
-//   }
-// }
 
 function getJump() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
-    for (j = 0; j < 2; j++) {
-      if (
-        Math.round(board[i]) === turn &&
-        Number.isInteger(board[i]) &&
-        board[i + turn * moves.men[j]] === turn * -1 &&
-        board[i + turn * moves.jump[j]] === 0
-      ) {
-        board[i] = 'j';
-      }
-    } 
+    if (
+      Math.round(board[i]) === turn &&
+      Number.isInteger(board[i]) &&
+      checkJump(i, moves.men, moves.jump)
+    ) {
+      board[i] = 'j';
+    }
   }
 }
 
 function getMove() {
   for (i = 0; i < board.length; i++) {
-    for (j = 0; j < 2; j++) {
-      if (
-        Math.round(board[i]) === turn &&
-        Number.isInteger(board[i]) &&
-        board[i + turn * moves.men[j]] === 0
-      ) {
-        board[i] = 'm';
-      }
+    if (
+      Math.round(board[i]) === turn &&
+      Number.isInteger(board[i]) &&
+      checkMove(i, moves.men)
+    ) {
+      board[i] = 'm';
     }
   }
 }
@@ -132,25 +104,23 @@ function selectPiece(evt) {
 
 function setMove() {
   let selPieceIdx = board.indexOf('s');
-  for (j = 0; j < 2; j++) {
-    if (board[selPieceIdx + turn * moves.men[j]] === 0) {
-      board[selPieceIdx + turn * moves.men[j]] = 'd';
-    }
-  }
+  let theMoves = checkMove(selPieceIdx, moves.men);
+  theMoves.forEach(function (move) {
+    board[move] = 'd';
+  })
 }
 
 function setJump() {
   let selPieceIdx = board.indexOf('s');
-  for (j = 0; j < 2; j++) {
-    if (
-      board[selPieceIdx + turn * moves.men[j]] === turn * -1 &&
-      board[selPieceIdx + turn * moves.jump[j]] === 0
-    ) {
-      board[selPieceIdx + turn * moves.men[j]] = 'q';
-      board[selPieceIdx + turn * moves.jump[j]] = 'd';
-      canJump = true;
-    }
+  let jumps = checkJump(selPieceIdx, moves.men, moves.jump);
+  if (jumps) {
+    jumps.forEach(function (pair) {
+      board[pair[0]] = 'q';
+      board[pair[1]] = 'd';
+    });
+    canJump = true;
   }
+  console.log(board);
 }
 
 function selectDest(evt) {
@@ -160,7 +130,6 @@ function selectDest(evt) {
   let oldIdx = board.indexOf('s');
   board[oldIdx] = 0;
   if (getMoveType(oldIdx, newIdx)) {
-    console.log(getMoveType(oldIdx, newIdx));
     endTurn(newIdx);
   } else {
     board[newIdx] = 's';
@@ -224,10 +193,30 @@ function endTurn(newIdx) {
   takeTurn();
 }
 
-function checkMove(idx, arr) {
-
+function checkJump(idx, moveArr, jumpArr) {
+  let jumps = [];
+  for (l = 0; l < jumpArr.length; l++) {
+    if (
+      board[idx + turn * moveArr[l]] === turn * -1 &&
+      board[idx + turn * jumpArr[l]] === 0
+    ) {
+      let quarry = idx + turn * moveArr[l];
+      let dest = idx + turn * jumpArr[l];
+      let specJump = [quarry, dest]
+      jumps.push(specJump);
+    }
+    if (jumps.length) {
+      return jumps;
+    }
+  }
 }
 
-function checkJump(idx, arr) {
-
+function checkMove(idx, moveArr) {
+  let regMoves = [];
+  for (l = 0; l < moveArr.length; l++) {
+    if (board[idx + turn * moveArr[l]] === 0) {
+      regMoves.push(idx + turn * moveArr[l]);
+    }
+  }
+  return regMoves;
 }
