@@ -6,10 +6,6 @@ const moves = {
   kingJump: [18, 14, -18, -14]
 };
 
-let myArr = [];
-console.log(myArr.indexOf(1));
-
-
 /*----- app's state (variables) -----*/
 let board, turn, selPieceIdx, canJump, canMove, availJumps, availMoves;
 
@@ -21,7 +17,6 @@ const squares = document.getElementsByClassName('square');
 init();
 
 function init() {
-  board = getBoard();
   turn = -1;
   selPieceIdx = 0;
   initView();
@@ -62,13 +57,11 @@ function render() {
 }
 
 function takeTurn() {
-  console.log(board);
   turn *= -1;
   canJump = [];
   canMove = [];
   availJumps = [];
   availMoves = [];
-  mustJump = false;
   getJump();
   if (board.indexOf('j') === -1) getMove();
 }
@@ -85,7 +78,6 @@ function getJump() {
       canJump.push(i);
     }
   }
-  console.log(canJump);
 }
 
 function getMove() {
@@ -98,7 +90,6 @@ function getMove() {
       canMove.push(i);
     }
   }
-  console.log(canMove);
 }
 
 function selectPiece(evt) {
@@ -108,24 +99,18 @@ function selectPiece(evt) {
     canJump.indexOf(selPieceIdx) !== -1 ||
     canMove.indexOf(selPieceIdx) !== -1
   ) {
-    resetStrings();
     render();
     setJump(selPieceIdx);
     if (canMove.length) setMove();
   }
-  console.log(board);
 }
 
 function setMove() {
   availMoves = checkMove(selPieceIdx, moves.men);
-  console.log(availMoves);
 }
 
 function setJump(idx) {
   availJumps = checkJump(idx, moves.men, moves.jump);
-  if (availJumps) {
-    mustJump = true;
-  }
 }
 
 function selectDest(evt) {
@@ -135,11 +120,8 @@ function selectDest(evt) {
     availJumps.indexOf(newIdx) !== -1 ||
     availMoves.indexOf(newIdx) !== -1
   ) {
-    console.log( `hitting selDest`);
-    console.log(`${selPieceIdx} is moving to ${newIdx}`);
     board[selPieceIdx] = 0;
     board[newIdx] = turn;
-    console.log(board)
     if (availJumps.length) {
       availJumps = [];
       setJump(newIdx);
@@ -174,33 +156,13 @@ function getBoard() {
   return game;
 }
 
-function resetStrings() {
-  for (i = 0; i < board.length; i++) {
-    if (board[i] === 'm' || board[i] === 'j') board[i] = turn;
-    if (board[i] === 'd' || board[i] === 'q') board[i] = 0;
-  }
-}
-
 function isOdd(num) {
   if (num % 2 !== 0) return true;
 };
 
-function isNeg1(num) {
-  if (num === -1) return true;
-}
-
-function isNonZero(num) {
-  if (typeof(num) === 'number' && num !== 0) return true;
-}
-
-function getMoveType(oldIdx, newIdx) {
-  if (moves.men.indexOf(Math.abs(oldIdx - newIdx)) !== -1) return true;
-}
-
 function endTurn(newIdx) {
   board[newIdx] = turn;
   selPieceIdx = 0;
-  resetStrings();
   render();
   takeTurn();
 }
