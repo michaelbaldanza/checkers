@@ -19,6 +19,7 @@ init();
 function init() {
   turn = -1;
   selPieceIdx = 0;
+  board = getBoard();
   initView();
   render();
   takeTurn();
@@ -63,7 +64,7 @@ function takeTurn() {
   availJumps = [];
   availMoves = [];
   getJump();
-  if (board.indexOf('j') === -1) getMove();
+  if (canJump.length === 0) getMove();
 }
 
 function getJump() {
