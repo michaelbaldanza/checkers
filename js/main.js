@@ -7,7 +7,7 @@ const moves = {
 };
 
 /*----- app's state (variables) -----*/
-let board, turn, selPieceIdx, canJump, canMove, availJumps, availMoves;
+let board, turn, selPieceIdx, canJump, canMove, availJumps, availQuarries, availMoves;
 
 /*----- cached element references -----*/
 const boardContainerEl = document.getElementById('board-container');
@@ -54,7 +54,9 @@ function render() {
     }
     if (board[i] === 0) piece.setAttribute('color', '');
   }
-  if (selPieceIdx !== 0) squares[selPieceIdx].firstChild.setAttribute('color', 'yellow');
+  if (selPieceIdx !== 0) {
+    squares[selPieceIdx].firstChild.setAttribute('color', 'yellow');
+  }
 }
 
 function takeTurn() {
@@ -62,19 +64,23 @@ function takeTurn() {
   canJump = [];
   canMove = [];
   availJumps = [];
+  availQuarries = [];
   availMoves = [];
   getJump();
-  if (canJump.length === 0) getMove();
+  console.log(`the length of canJump is ${canJump.length}`);
+  console.log(canJump);
+  if (!canJump.length) getMove();
 }
 
 function getJump() {
+  console.log(`running getJump`);
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     let jumps = checkJump(i, moves.men, moves.jump);
     if (
       Math.round(board[i]) === turn &&
       Number.isInteger(board[i]) &&
-      jumps.length
+      jumps[0].length
     ) {
       canJump.push(i);
     }
@@ -102,6 +108,8 @@ function selectPiece(evt) {
   ) {
     render();
     setJump(selPieceIdx);
+    console.log(canMove.length)
+    console.log(canMove);
     if (canMove.length) setMove();
   }
 }
@@ -111,7 +119,9 @@ function setMove() {
 }
 
 function setJump(idx) {
-  availJumps = checkJump(idx, moves.men, moves.jump);
+  // availJumps = checkJump(idx, moves.men, moves.jump);
+  availJumps = checkJump(idx, moves.men, moves.jump)[0];
+  availQuarries = checkJump(idx, moves.men, moves.jump)[1];
 }
 
 function selectDest(evt) {
@@ -121,10 +131,16 @@ function selectDest(evt) {
     availJumps.indexOf(newIdx) !== -1 ||
     availMoves.indexOf(newIdx) !== -1
   ) {
+    if (availQuarries.length) {
+      let quarry = availQuarries[availJumps.indexOf(newIdx)];
+      board[quarry] = 0;
+    }
     board[selPieceIdx] = 0;
     board[newIdx] = turn;
     if (availJumps.length) {
+      availQuarries[availJumps.indexOf(newIdx)] = 0;
       availJumps = [];
+      availQuarries = [];
       setJump(newIdx);
       if (availJumps.length) {
         selPieceIdx = newIdx;
@@ -169,13 +185,14 @@ function endTurn(newIdx) {
 }
 
 function checkJump(idx, moveArr, jumpArr) {
-  let jumps = [];
+  let dests = [], quarries = [], jumps = [dests, quarries];
   for (l = 0; l < jumpArr.length; l++) {
     if (
       board[idx + turn * moveArr[l]] === turn * -1 &&
       board[idx + turn * jumpArr[l]] === 0
     ) {
-      jumps.push(idx + turn * jumpArr[l])
+      dests.push(idx + turn * jumpArr[l])
+      quarries.push(idx + turn * moveArr[l]);
     }
   return jumps;
   }
