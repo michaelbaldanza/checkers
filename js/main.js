@@ -168,9 +168,10 @@ function isOdd(num) {
 };
 
 function endTurn(newIdx) {
-  board[newIdx] = turn;
   selPieceIdx = 0;
+  kingMaker(newIdx);
   render();
+  console.log(board);
   takeTurn();
 }
 
@@ -196,4 +197,13 @@ function checkMove(idx, moveArr) {
     }
   }
   if (regMoves.length) return regMoves;
+}
+
+function kingMaker(idx) {
+  let crownhead = [1, 3, 5, 7, 56, 58, 60, 62];
+  if (crownhead.indexOf(idx) === -1) {
+    return;
+  } else {
+    board[idx] = board[idx] * turn + 0.1 * turn;
+  }
 }
