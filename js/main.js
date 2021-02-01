@@ -67,13 +67,10 @@ function takeTurn() {
   availQuarries = [];
   availMoves = [];
   getJump();
-  console.log(`the length of canJump is ${canJump.length}`);
-  console.log(canJump);
   if (!canJump.length) getMove();
 }
 
 function getJump() {
-  console.log(`running getJump`);
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     let jumps = checkJump(i, moves.men, moves.jump);
@@ -108,8 +105,6 @@ function selectPiece(evt) {
   ) {
     render();
     setJump(selPieceIdx);
-    console.log(canMove.length)
-    console.log(canMove);
     if (canMove.length) setMove();
   }
 }
@@ -119,7 +114,6 @@ function setMove() {
 }
 
 function setJump(idx) {
-  // availJumps = checkJump(idx, moves.men, moves.jump);
   availJumps = checkJump(idx, moves.men, moves.jump)[0];
   availQuarries = checkJump(idx, moves.men, moves.jump)[1];
 }
@@ -131,14 +125,10 @@ function selectDest(evt) {
     availJumps.indexOf(newIdx) !== -1 ||
     availMoves.indexOf(newIdx) !== -1
   ) {
-    if (availQuarries.length) {
-      let quarry = availQuarries[availJumps.indexOf(newIdx)];
-      board[quarry] = 0;
-    }
     board[selPieceIdx] = 0;
     board[newIdx] = turn;
     if (availJumps.length) {
-      availQuarries[availJumps.indexOf(newIdx)] = 0;
+      board[availQuarries[availJumps.indexOf(newIdx)]] = 0;
       availJumps = [];
       availQuarries = [];
       setJump(newIdx);
@@ -194,8 +184,8 @@ function checkJump(idx, moveArr, jumpArr) {
       dests.push(idx + turn * jumpArr[l])
       quarries.push(idx + turn * moveArr[l]);
     }
-  return jumps;
   }
+  return jumps;
 }
 
 function checkMove(idx, moveArr) {
