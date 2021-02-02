@@ -50,7 +50,8 @@ function render() {
     if (Math.round(board[i]) === 1) piece.setAttribute('color', 'red');
     if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
     if (!Number.isInteger(board[i]) && typeof(board[i]) === 'number') {
-      piece.setAttribute('king', 'true');
+      // piece.setAttribute('king', 'true');
+      piece.textContent = 'KING';
     }
     if (board[i] === 0) piece.setAttribute('color', '');
   }
@@ -204,6 +205,6 @@ function kingMaker(idx) {
   if (crownhead.indexOf(idx) === -1) {
     return;
   } else {
-    board[idx] = board[idx] * turn + 0.1 * turn;
+    board[idx] = board[idx] + 0.1 * turn;
   }
 }
