@@ -53,7 +53,10 @@ function render() {
       // piece.setAttribute('king', 'true');
       piece.textContent = 'KING';
     }
-    if (board[i] === 0) piece.setAttribute('color', '');
+    if (board[i] === 0) {
+      piece.setAttribute('color', '');
+      piece.textContent = '';
+    }
   }
   if (selPieceIdx !== 0) {
     squares[selPieceIdx].firstChild.setAttribute('color', 'yellow');
@@ -75,10 +78,16 @@ function getJump() {
   for (i = 0; i < board.length; i++) {
     // select the indices modeling the current player's pieces
     let jumps = checkJump(i, moves.men, moves.jump);
+    let kingJumps = checkJump(i, moves.king, moves.kingJump);
     if (
-      Math.round(board[i]) === turn &&
-      Number.isInteger(board[i]) &&
+      board[i] === turn &&
       jumps[0].length
+    ) {
+      canJump.push(i);
+    } else if (
+      Math.round(board[i]) === turn &&
+      !Number.isInteger(board[i]) &&
+      kingJumps[0].length
     ) {
       canJump.push(i);
     }
@@ -88,9 +97,14 @@ function getJump() {
 function getMove() {
   for (i = 0; i < board.length; i++) {
     if (
-      Math.round(board[i]) === turn &&
-      Number.isInteger(board[i]) &&
+      board[i] === turn &&
       checkMove(i, moves.men)
+    ) {
+      canMove.push(i);
+    } else if (
+      Math.round(board[i]) === turn &&
+      !Number.isInteger(board[i]) &&
+      checkMove(i, moves.king)
     ) {
       canMove.push(i);
     }
@@ -108,15 +122,25 @@ function selectPiece(evt) {
     setJump(selPieceIdx);
     if (canMove.length) setMove();
   }
+  console.log(availMoves)
 }
 
 function setMove() {
-  availMoves = checkMove(selPieceIdx, moves.men);
+  if (Number.isInteger(board[selPieceIdx])) {
+    availMoves = checkMove(selPieceIdx, moves.men);
+  } else {
+    availMoves = checkMove(selPieceIdx, moves.king);
+  }
 }
 
 function setJump(idx) {
-  availJumps = checkJump(idx, moves.men, moves.jump)[0];
-  availQuarries = checkJump(idx, moves.men, moves.jump)[1];
+  if (Number.isInteger(board[idx])) {
+    availJumps = checkJump(idx, moves.men, moves.jump)[0];
+    availQuarries = checkJump(idx, moves.men, moves.jump)[1];
+  } else {
+    availJumps = checkJump(idx, moves.king, moves.kingJump)[0];
+    availQuarries = checkJump(idx, moves.king, moves.kingJump)[1];
+  }
 }
 
 function selectDest(evt) {
@@ -126,8 +150,9 @@ function selectDest(evt) {
     availJumps.indexOf(newIdx) !== -1 ||
     availMoves.indexOf(newIdx) !== -1
   ) {
+    board[newIdx] = board[selPieceIdx];
+    // board[newIdx] = turn;
     board[selPieceIdx] = 0;
-    board[newIdx] = turn;
     if (availJumps.length) {
       board[availQuarries[availJumps.indexOf(newIdx)]] = 0;
       availJumps = [];
@@ -180,7 +205,7 @@ function checkJump(idx, moveArr, jumpArr) {
   let dests = [], quarries = [], jumps = [dests, quarries];
   for (l = 0; l < jumpArr.length; l++) {
     if (
-      board[idx + turn * moveArr[l]] === turn * -1 &&
+      Math.round(board[idx + turn * moveArr[l]]) === turn * -1 &&
       board[idx + turn * jumpArr[l]] === 0
     ) {
       dests.push(idx + turn * jumpArr[l])
@@ -202,7 +227,10 @@ function checkMove(idx, moveArr) {
 
 function kingMaker(idx) {
   let crownhead = [1, 3, 5, 7, 56, 58, 60, 62];
-  if (crownhead.indexOf(idx) === -1) {
+  if (
+      crownhead.indexOf(idx) === -1 ||
+      !Number.isInteger(board[idx])
+    ) {
     return;
   } else {
     board[idx] = board[idx] + 0.1 * turn;
