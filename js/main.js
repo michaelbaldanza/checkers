@@ -51,7 +51,6 @@ function render() {
     if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
     if (!Number.isInteger(board[i]) && typeof(board[i]) === 'number') {
       piece.setAttribute('king', 'true');
-      // piece.textContent = 'KING';
     }
     if (board[i] === 0) {
       piece.setAttribute('color', '');
@@ -151,7 +150,6 @@ function selectDest(evt) {
     availMoves.indexOf(newIdx) !== -1
   ) {
     board[newIdx] = board[selPieceIdx];
-    // board[newIdx] = turn;
     board[selPieceIdx] = 0;
     if (availJumps.length) {
       board[availQuarries[availJumps.indexOf(newIdx)]] = 0;
