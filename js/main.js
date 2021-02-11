@@ -50,8 +50,8 @@ function render() {
     if (Math.round(board[i]) === 1) piece.setAttribute('color', 'red');
     if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
     if (!Number.isInteger(board[i]) && typeof(board[i]) === 'number') {
-      // piece.setAttribute('king', 'true');
-      piece.textContent = 'KING';
+      piece.setAttribute('king', 'true');
+      // piece.textContent = 'KING';
     }
     if (board[i] === 0) {
       piece.setAttribute('color', '');
@@ -226,13 +226,12 @@ function checkMove(idx, moveArr) {
 }
 
 function kingMaker(idx) {
-  let crownhead = [1, 3, 5, 7, 56, 58, 60, 62];
   if (
-      crownhead.indexOf(idx) === -1 ||
-      !Number.isInteger(board[idx])
+      idx < 8 || idx > 55 &&
+      Number.isInteger(board[idx])
     ) {
-    return;
+      board[idx] = board[idx] + 0.1 * turn;
   } else {
-    board[idx] = board[idx] + 0.1 * turn;
+    return;
   }
 }
