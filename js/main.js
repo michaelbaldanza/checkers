@@ -50,7 +50,10 @@ function render() {
     if (Math.round(board[i]) === 1) piece.setAttribute('color', 'red');
     if (Math.round(board[i]) === -1) piece.setAttribute('color', 'white');
     if (!Number.isInteger(board[i]) && typeof(board[i]) === 'number') {
-      piece.setAttribute('king', 'true');
+      piece.setAttribute('king', '');
+    }
+    if (Number.isInteger(board[i] && piece.hasAttribute('king'))) {
+      piece.removeAttribute('king');
     }
     if (board[i] === 0) {
       piece.setAttribute('color', '');
