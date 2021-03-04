@@ -13,7 +13,6 @@ body {
 .square {
   min-width: 70px;
   min-height: 70px;
-  /* border: solid grey 1px; */
   border: none;
   display: flex;
   justify-content: center;
@@ -21,54 +20,32 @@ body {
 }
 
 div[grey="true"] {
-  /* background-color: #000105; */
   background-color: black;
 }
 
 div[grey="false"] {
-  /* background-color: #FDFFFA; */
   background-color: ivory;
 }
 
-.piece {
-  min-width: 60px;
-  min-height: 60px;
-  border-radius: 50%;
-  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
-  box-shadow: inset 0 0 20px rgb(43, 154, 158);
-}
-
 div[color="red"] {
-  /* background-color: #B00C17; */
-  /* background-color: firebrick; */
   background-color: red;
   min-width: 60px;
   min-height: 60px;
   border-radius: 50%;
-  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
-  box-shadow: inset 0 0 20px rgb(43, 154, 158);
 }
 
 div[color="white"] {
-  /* background-color: #FDFFFA; */
-  /* background-color: ivory; */
-  background-color: white;
+  background-color: ivory;
   min-width: 60px;
   min-height: 60px;
   border-radius: 50%;
-  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
-  box-shadow: inset 0 0 20px rgb(43, 154, 158);
 }
 
 div[color="yellow"] {
-  /* background-color: #FDFFFA; */
-  /* background-color: ivory; */
   background-color: yellow;
   min-width: 60px;
   min-height: 60px;
   border-radius: 50%;
-  /* box-shadow: 2px 2px 5px 0px rgb(43, 154, 158); */
-  box-shadow: inset 0 0 20px rgb(43, 154, 158);
 }
 
 div[selected] {
@@ -78,5 +55,6 @@ div[selected] {
 div[king] {
   background-image: url('../src/crown.svg');
   background-position: center center;
-  background-size: contain;
+  background-repeat: no-repeat;
+  background-size: 90%;
 }
