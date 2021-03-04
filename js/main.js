@@ -114,17 +114,16 @@ function getMove() {
 }
 
 function selectPiece(evt) {
-  let selPiece = evt.target;
-  selPieceIdx = Number(selPiece.parentElement.getAttribute('tileNo'));
+  let idx = Number(evt.target.parentElement.getAttribute('tileNo'));
   if (
-    canJump.indexOf(selPieceIdx) !== -1 ||
-    canMove.indexOf(selPieceIdx) !== -1
+    canJump.indexOf(idx) !== -1 ||
+    canMove.indexOf(idx) !== -1
   ) {
+    selPieceIdx = idx;
     render();
     setJump(selPieceIdx);
     if (canMove.length) setMove();
   }
-  console.log(availMoves)
 }
 
 function setMove() {
